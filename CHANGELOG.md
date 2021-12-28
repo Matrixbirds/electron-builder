@@ -1,3 +1,12 @@
+# [](https://github.com/electron-userland/electron-builder/compare/v22.14.11...v) (2021-12-28)
+
+
+### Bug Fixes
+
+* specify protocol as https to complete proxy support fix ([#6516](https://github.com/electron-userland/electron-builder/issues/6516)) ([344bb23](https://github.com/electron-userland/electron-builder/commit/344bb232d71e608b881a04fc98dca0858e42ddfc)), closes [#6286](https://github.com/electron-userland/electron-builder/issues/6286)
+
+
+
 # [](https://github.com/electron-userland/electron-builder/compare/v22.14.10...v) (2021-12-21)
 
 
