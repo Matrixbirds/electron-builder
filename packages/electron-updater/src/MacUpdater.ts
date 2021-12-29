@@ -97,9 +97,7 @@ export class MacUpdater extends AppUpdater {
     const log = this._logger
     const logContext = `fileToProxy=${zipFileInfo.url.href}`
     this.debug(`Creating proxy server for native Squirrel.Mac (${logContext})`)
-    if (typeof this.server !== 'undefined') {
-      this.server.close()
-    }
+    this.server?.close()
     this.server = createServer()
     this.debug(`Proxy server for native Squirrel.Mac is created (${logContext})`)
     this.server.on("close", () => {
@@ -107,8 +105,8 @@ export class MacUpdater extends AppUpdater {
     })
 
     // must be called after server is listening, otherwise address is null
-    const getServerUrl = (): string => {
-      const address = this.server!.address()
+    const getServerUrl = (s: Server): string => {
+      const address = s.address()
       if (typeof address === "string") {
         return address
       }
@@ -145,7 +143,7 @@ export class MacUpdater extends AppUpdater {
         const requestUrl = request.url!
         log.info(`${requestUrl} requested`)
         if (requestUrl === "/") {
-          const data = Buffer.from(`{ "url": "${getServerUrl()}${fileUrl}" }`)
+          const data = Buffer.from(`{ "url": "${getServerUrl(this.server!)}${fileUrl}" }`)
           response.writeHead(200, { "Content-Type": "application/json", "Content-Length": data.length })
           response.end(data)
           return
@@ -190,9 +188,9 @@ export class MacUpdater extends AppUpdater {
       this.debug(`Proxy server for native Squirrel.Mac is starting to listen (${logContext})`)
 
       this.server!.listen(0, "127.0.0.1", () => {
-        this.debug(`Proxy server for native Squirrel.Mac is listening (address=${getServerUrl()}, ${logContext})`)
+        this.debug(`Proxy server for native Squirrel.Mac is listening (address=${getServerUrl(this.server!)}, ${logContext})`)
         this.nativeUpdater.setFeedURL({
-          url: getServerUrl(),
+          url: getServerUrl(this.server!),
           headers: {
             "Cache-Control": "no-cache",
             Authorization: `Basic ${authInfo.toString("ascii")}`,
@@ -214,9 +212,7 @@ export class MacUpdater extends AppUpdater {
   }
 
   quitAndInstall(): void {
-    if (typeof this.server !== "undefined") {
-      this.server.close()
-    }
+    this.server?.close()
     if (this.squirrelDownloadedUpdate) {
       // update already fetched by Squirrel, it's ready to install
       this.nativeUpdater.quitAndInstall()
